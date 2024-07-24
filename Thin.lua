@@ -1,5 +1,4 @@
-local apiKey = "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"
-local apiUrl = "https://api.groq.com/openai/v1/chat/completions"
+local proxyUrl = "https://f9a654e5d970c2136e0957e8379f028e.serveo.net/chat"
 local memory = {}
 
 local player = game.Players.LocalPlayer
@@ -12,22 +11,19 @@ if not HttpService then
     return
 end
 
--- Function to send chat to Groq API
+-- Function to send chat to Proxy API
 local function getApiResponse(message)
     local success, response = pcall(function()
         return HttpService:PostAsync(
-            apiUrl,
+            proxyUrl,
             HttpService:JSONEncode({
-                model = "llama3-8b-8192",
                 messages = {
                     { role = "system", content = "Be a respectful AI" },
                     table.unpack(memory),
                     { role = "user", content = message }
                 }
             }),
-            Enum.HttpContentType.ApplicationJson,
-            false,
-            { ["Authorization"] = "Bearer " .. apiKey }
+            Enum.HttpContentType.ApplicationJson
         )
     end)
     if success then
