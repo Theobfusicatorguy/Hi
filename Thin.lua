@@ -1,28 +1,16 @@
-local proxyUrl = "https://f9a654e5d970c2136e0957e8379f028e.serveo.net/chat"
+local HttpService = game:GetService("HttpService")
+local proxyUrl = "https://c5a5a248032c7bdf7244065d5e5895f2.serveo.net"  -- Local proxy URL
 local memory = {}
 
 local player = game.Players.LocalPlayer
 local chatDistance = 100
-
--- Ensure the HttpService is available
-local HttpService = game:GetService("HttpService")
-if not HttpService then
-    warn("HttpService is not available!")
-    return
-end
 
 -- Function to send chat to Proxy API
 local function getApiResponse(message)
     local success, response = pcall(function()
         return HttpService:PostAsync(
             proxyUrl,
-            HttpService:JSONEncode({
-                messages = {
-                    { role = "system", content = "Be a respectful AI" },
-                    table.unpack(memory),
-                    { role = "user", content = message }
-                }
-            }),
+            HttpService:JSONEncode({ message = message, memory = memory }),
             Enum.HttpContentType.ApplicationJson
         )
     end)
