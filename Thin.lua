@@ -5,12 +5,17 @@ local memory = {}
 local player = game.Players.LocalPlayer
 local chatDistance = 100
 
+-- Ensure the HttpService is available
+local HttpService = game:GetService("HttpService")
+if not HttpService then
+    warn("HttpService is not available!")
+    return
+end
+
 -- Function to send chat to Groq API
 local function getApiResponse(message)
-    local HttpService = game:GetService("HttpService")
-    local response
-    local success, errorMessage = pcall(function()
-        response = HttpService:PostAsync(
+    local success, response = pcall(function()
+        return HttpService:PostAsync(
             apiUrl,
             HttpService:JSONEncode({
                 model = "llama3-8b-8192",
@@ -31,7 +36,7 @@ local function getApiResponse(message)
         table.insert(memory, { role = "assistant", content = reply })
         return reply
     else
-        warn("Failed to get API response: " .. errorMessage)
+        warn("Failed to get API response: " .. tostring(response))
         return "Error: Unable to get response."
     end
 end
