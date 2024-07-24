@@ -28,9 +28,25 @@ local function getApiResponse(message)
     return reply
 end
 
+-- Function to get a player's position
+local function getPlayerPosition(player)
+    if player.Character and player.Character.PrimaryPart then
+        return player.Character.PrimaryPart.Position
+    else
+        for _, part in ipairs(player.Character:GetChildren()) do
+            if part:IsA("BasePart") then
+                return part.Position
+            end
+        end
+    end
+    return nil
+end
+
 -- Function to listen for chat messages
 local function onPlayerChatted(player, message)
-    if player:DistanceFromCharacter(game.Players.LocalPlayer.Character.Position) <= chatDistance then
+    local playerPosition = getPlayerPosition(player)
+    local localPlayerPosition = getPlayerPosition(game.Players.LocalPlayer)
+    if playerPosition and localPlayerPosition and (playerPosition - localPlayerPosition).Magnitude <= chatDistance then
         table.insert(memory, { role = "user", content = message })
         local response = getApiResponse(message)
         game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(response, "All")
