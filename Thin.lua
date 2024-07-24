@@ -46,25 +46,13 @@ end
 local function onPlayerChatted(player, message)
     local playerPosition = getPlayerPosition(player)
     local localPlayerPosition = getPlayerPosition(game.Players.LocalPlayer)
-    if playerPosition and localPlayerPosition and (playerPosition - localPlayerPosition).Magnitude <= chatDistance then
-        table.insert(memory, { role = "user", content = message })
-        local response = getApiResponse(message)
-        game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(response, "All")
-    end
-end
-
--- Connect chat listener to all players
-for _, otherPlayer in pairs(game.Players:GetPlayers()) do
-    if otherPlayer ~= player then
-        otherPlayer.Chatted:Connect(function(message)
-            onPlayerChatted(otherPlayer, message)
-        end)
-    end
-end
-
--- Connect chat listener to new players joining
-game.Players.PlayerAdded:Connect(function(newPlayer)
-    newPlayer.Chatted:Connect(function(message)
-        onPlayerChatted(newPlayer, message)
-    end)
-end)
+    if playerPosition and localPlayerPosition then
+        local distance = (playerPosition - localPlayerPosition).Magnitude
+        if distance <= chatDistance then
+            table.insert(memory, { role = "user", content = message })
+            local response = getApiResponse(message)
+            game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(response, "All")
+        end
+    else
+        warn("Unable to get position for player: " .. player.Nam
+            
